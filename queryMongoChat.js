@@ -1,0 +1,1 @@
+db.getCollection('messages').find({publishedAt : { $gte : ISODate("2020-08-30T00:00:00.001Z")} })  

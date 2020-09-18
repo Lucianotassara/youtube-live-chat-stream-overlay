@@ -4,14 +4,54 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Live Chat</title>
+  <link rel="stylesheet" href="style.css" />
+
 </head>
 <body>
   <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2.3.0/dist/socket.io.js"></script>
   <script>
-    const socket = io('http://localhost:5000');
+
+    function createHeart(message) {
+        const heart = document.createElement("div");
+        heart.classList.add("heart");
+
+        heart.style.left = Math.random() * 80 + "vw";
+        heart.style.height = Math.random() * 10;
+        heart.style.animationDuration = Math.random() * 5 + 6 + "s";
+        
+        heart.innerHTML = `<section class="container">
+                            <div class="one message parker">
+                              <h6 id="nombre">${message.author.displayName}</h6>
+                              <p id="mensaje">${message.message}</p>
+                              </div>
+                            <div class="two">
+                              <img id="avatar" src="${message.author.profileImageUrl}" alt="" width="48" height="48">
+                              </div>
+                          </section>`;       
+        
+        document.body.appendChild(heart);
+
+        setTimeout(() => {
+            heart.remove();
+        }, 8000);
+    }
+
+    // setInterval(createHeart, 300);
+
+
+    const socket = io('http://192.168.1.50:5000');
     // listen for new messages in realtime
     socket.on('messages', (messages) => {
       console.log(messages);
+      // createHeart(messages[0]);
+
+      messages.forEach(element => {
+        var allowed = ['amen', 'Amen', 'amén', 'Amén','amen!', 'Amen!', 'amén!', 'Amén!', 'AMEN', 'AMÉN', 'AMEN!', 'AMÉN!'];
+        if (allowed.indexOf(element.message) !== -1) {
+          createHeart(element)
+        }
+          
+      });
     });
 
     // REST Endpoints:
