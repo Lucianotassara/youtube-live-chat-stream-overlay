@@ -1,8 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;600&display=swap");
-
+/* 
 * {
     box-sizing: border-box;
-}
+} */
 
 body {
     background-color: rgb(30, 255, 0);
@@ -63,6 +63,52 @@ body {
         color: rgb(0, 0, 0);
     }
 
+/*TOAST NOTIFICATION*/
 
+/**/
+/**/
+
+
+button {
+    background-color: lightcoral;
+    color: white;
+    font-family: inherit;
+    padding: 1rem;
+    border-radius: 5px;
+    border: none;
+}
+
+#container {
+    overflow: visible;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+}
+
+.toast {
+    /* background: rgb(186,39,32); */
+    /* background: linear-gradient(120deg, rgba(186,39,32,1) 0%, rgba(186,39,32,0.2511379551820728) 100%); */
+    background: rgb(0,0,0);
+    background: linear-gradient(120deg, rgba(0,0,0,1) 0%, rgba(186,32,32,0.3337710084033614) 100%);
+    max-width: 450px;
+    width: 450px;
+    border-radius: 8px;
+    color: #fff;
+    padding: 1rem;
+    margin: 0.5rem;
     
+    /**/
+
+}
+
+#motivo{
+    /* padding: 2px; */
+    margin-bottom: 6px;
+}
+
+#nombreMotivo{
+    /* padding: 2px; */
+    margin-top: 1px;
+    margin-bottom: 1px;
+}
 

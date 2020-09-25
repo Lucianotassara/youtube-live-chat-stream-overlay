@@ -57,6 +57,29 @@ app.get('/messages', async (req, res, next) => {
   }
 });
 
+app.get('/messagesReport', async (req, res, next) => {
+  try {
+    const where = {};
+    if (req.query.liveChatId) {
+      where.liveChatId = req.query.liveChatId;
+    }
+    if (req.query.q) {
+      where.message = { $regex: req.query.q.toString() };
+    }
+
+    //const allMessages = await messages.distinct('liveChatId');
+
+    const allMessages = await messages.find(where, {
+      $groupBy: { liveChatId },
+    });
+    
+
+    return res.json(allMessages);
+  } catch (error) {
+    return next(error);
+  }
+});
+
 let listening = false;
 async function listenChat() {
   if (listening) {

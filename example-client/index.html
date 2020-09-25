@@ -3,15 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Live Chat</title>
+  <title>Live Overlay</title>
   <link rel="stylesheet" href="style.css" />
 
 </head>
 <body>
+  <div id="container"></div>
+  <!-- <button id="btn">Test</button> -->
+
   <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2.3.0/dist/socket.io.js"></script>
   <script>
 
-    function createHeart(message) {
+    function createBuble(message) {
         const heart = document.createElement("div");
         heart.classList.add("heart");
 
@@ -31,26 +34,112 @@
         
         document.body.appendChild(heart);
 
+        heart.addEventListener("click", () => {
+          heart.remove();
+      });
+
         setTimeout(() => {
             heart.remove();
         }, 8000);
     }
+/**/
 
-    // setInterval(createHeart, 300);
+
+/********************** TEST BOTON **************************/
+
+// const btn = document.getElementById("btn");
+
+// btn.addEventListener("click", () => {
+//     createMotivo(chatFijo[Math.floor(Math.random() * 15) + 1]);
+// });
+
+/********************** TEST BOTON **************************/
 
 
+    /* MOTIVOS DE ORACION */
+    const container = document.getElementById("container");
+    
+    function createMotivo(message) {  
+      const notif = document.createElement("div");
+      notif.classList.add("toast");
+
+      notif.innerHTML = ` <img id="avatar" src="${message.author.profileImageUrl}" alt="" width="48" height="48">
+                          <h3 id="nombreMotivo">${message.author.displayName} pide oración</h3>
+                          <p id="motivo">${message.message}</p>`
+
+      //Listener para eliminar haciendo click
+      notif.addEventListener("click", () => {
+        notif.remove();
+      });
+
+      container.appendChild(notif);
+
+      setTimeout(() => {
+          notif.remove();
+          console.log('pasaron 60 segundos, remuevo el motivo de oración');
+      }, 60000);
+    }
+
+    
+
+    /* Burbujas de comentarios */
+    let lluvia = true;
+    let motivos = false;
+
+    let users = [];
+    let usersOracion = [];
     const socket = io('http://192.168.1.50:5000');
     // listen for new messages in realtime
     socket.on('messages', (messages) => {
       console.log(messages);
-      // createHeart(messages[0]);
+      // createBuble(messages[0]);
 
       messages.forEach(element => {
-        var allowed = ['amen', 'Amen', 'amén', 'Amén','amen!', 'Amen!', 'amén!', 'Amén!', 'AMEN', 'AMÉN', 'AMEN!', 'AMÉN!'];
-        if (allowed.indexOf(element.message) !== -1) {
-          createHeart(element)
+        
+        /********* LLUVIA DE AMEN *****************/
+        var allowed = ['HOLA', 'HOLAA','HOLAAA!', 'HOLA!', 'HOLIS!', 'HOLISSSS', '👋 HOLA','👋 HOLA!!','👋👋', '👋', '👋👋👋'];
+        // var allowed = ['AMEN', 'AMÉN', 'AMEN!', 'AMÉN!','AMEN!!', 'AMÉN!!', '🙏', '🙏🙏', '🙏🙏🙏', 'ALELUYA!', 'ALELUYA!!', '🙌'];
+        // var allowed = ['CHAU', 'CHAU!', 'CHAUUU!!', , 'CHAUUU!', 'HASTA LA PROXIMA', 'ADIOS!', 'ADIOS!!','👋👋', '👋', '👋👋👋'];
+
+        let saludo = element.message.toUpperCase();
+        if (allowed.indexOf(saludo) !== -1) {
+          if (users.indexOf(element.author.displayName) === -1) {
+            users.push(element.author.displayName)
+            console.log('Usuarios silenciados: ' + users);
+            createBuble(element)
+            setTimeout(() => {
+              let removed = users.pop();
+              console.log('pasaron 90 segundos, remuevo de blacklist al usuario' + removed);
+            }, 90000);
+          }
+          else {
+            console.log(element.author.displayName + ' Envió un mensaje pero está silenciado.');
+          }
         }
-          
+        
+        /*********  MOTIVOS DE ORACIÓN  *****************/
+        // if (allowed.indexOf(element.message) !== -1) {
+          let str = element.message;
+          if (str.startsWith('!orar ')) {
+            if (usersOracion.indexOf(element.author.displayName) === -1) {
+
+              usersOracion.push(element.author.displayName)
+              console.log('Recibo un motivo de oración');
+
+              element.message = str.replace('!orar ','');
+              // Mostrar motivo de oración
+              createMotivo(element)
+              setTimeout(() => {
+                usersOracion.pop();
+              }, 180000);
+            }
+             else {
+              console.log(element.author.displayName + ' quiere enviar mas de un motivo de oración.');
+          }
+        }
+
+
+
       });
     });
 
