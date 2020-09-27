@@ -14,7 +14,7 @@ body {
     min-height: 100vh;
 }
 
-.heart {
+.burbuja {
     position: fixed;
     top: -1vh;
     font-size: 2rem;

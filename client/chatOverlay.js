@@ -3,18 +3,19 @@ const COOLDOWN_MOTIVO_MS = 45000;
 // const COOLDOWN_BURBUJA_MS = 1000;
 // const COOLDOWN_MOTIVO_MS = 1000;
 const TIMEOUT_MOTIVOS_PANTALLA = 180000;
+const TIMEOUT_BURBUJA_PANTALLA = 8000;
 
 const SOCKET_URL = "http://192.168.1.50:5000";
 
 function createBuble(message) {
-  const heart = document.createElement("div");
-  heart.classList.add("heart");
+  const burbuja = document.createElement("div");
+  burbuja.classList.add("burbuja");
 
-  heart.style.left = Math.random() * 80 + "vw";
-  heart.style.height = Math.random() * 10;
-  heart.style.animationDuration = Math.random() * 5 + 6 + "s";
+  burbuja.style.left = Math.random() * 80 + "vw";
+  burbuja.style.height = Math.random() * 10;
+  burbuja.style.animationDuration = Math.random() * 5 + 6 + "s";
 
-  heart.innerHTML = `<section class="container">
+  burbuja.innerHTML = `<section class="container">
                         <div class="one message parker">
                           <h6 id="nombre">${message.author.displayName}</h6>
                           <p id="mensaje">${message.message}</p>
@@ -24,15 +25,15 @@ function createBuble(message) {
                           </div>
                       </section>`;
 
-  document.body.appendChild(heart);
+  document.body.appendChild(burbuja);
 
-  heart.addEventListener("click", () => {
-    heart.remove();
+  burbuja.addEventListener("click", () => {
+    burbuja.remove();
   });
 
   setTimeout(() => {
-    heart.remove();
-  }, 8000);
+    burbuja.remove();
+  }, TIMEOUT_BURBUJA_PANTALLA);
 }
 /**/
 
@@ -71,8 +72,7 @@ function createMotivo(message) {
 }
 
 /* Burbujas de comentarios */
-// let modoLluvia = `desactivado`; // Por default es lluvia desactivada.
-let motivos = false;
+let orar = false;
 let allowed = [];
 
 let users = [];
@@ -99,7 +99,7 @@ socket.on("messages", (messages) => {
       } else {
         if (comment ===`!amen`){
           // modoLluvia = `amen`;
-          allowed = ["AMEN","AMÉN","AMEN!","AMÉN!","AMEN!!","AMÉN!!","🙏","🙏🙏","🙏🙏🙏","ALELUYA!","ALELUYA!!","🙌"];
+          allowed = ["AMEN","AMÉN","AMEN!","AMÉN!","AMEN!!","AMÉN!!","🙏","🙏🙏","🙏🙏🙏","ALELUYA!","ALELUYA!!",'🙌🙌','',"🙌",'🎵','🎵🎵','🎵🎵🎵','🎶','🎶🎶','🎶🎶🎶'];
           console.log(`${element.author.displayName} activó el modo lluvia en amen` )
           console.log(`Valores permitidos en lluvia ${allowed.toString()}` )
           
@@ -112,19 +112,18 @@ socket.on("messages", (messages) => {
 
           }
           if(comment === '!orar'){
-            motivos = true;
-            // allowed = ["AMEN","AMÉN","AMEN!","AMÉN!","AMEN!!","AMÉN!!","🙏","🙏🙏","🙏🙏🙏","ALELUYA!","ALELUYA!!","🙌"];
+            orar = true;
+            allowed = ["AMEN","AMÉN","AMEN!","AMÉN!","AMEN!!","AMÉN!!","🙏","🙏🙏","🙏🙏🙏"];
             console.log(`${element.author.displayName} activó el modo orar por necesidades 🙏🙏🙏` )
             console.log(`Valores permitidos en lluvia ${allowed.toString()}` )
           } else {
             if(comment === '!orar-end'){
-              motivos = false;
-              // allowed = ["AMEN","AMÉN","AMEN!","AMÉN!","AMEN!!","AMÉN!!","🙏","🙏🙏","🙏🙏🙏","ALELUYA!","ALELUYA!!","🙌"];
+              orar = false;
               console.log(`${element.author.displayName} finalizó el modo orar por necesidades. 🙏🙏🙏` )
               console.log(`Valores permitidos en lluvia ${allowed.toString()}` )
             } else {
               if(comment === '!silent-mode'){
-                motivos = false;
+                orar = false;
                 allowed = [];
                 console.log(`${element.author.displayName} Activó el modo silencio. 🔴🔴🔴` )
               }
@@ -157,7 +156,7 @@ socket.on("messages", (messages) => {
     }
 
     /*********  MOTIVOS DE ORACIÓN  *****************/
-    if(motivos){
+    if(orar){
       let str = element.message;
       if (str.startsWith("!orar ")) {
         if (usersOracion.indexOf(element.author.displayName) === -1) {
@@ -168,7 +167,7 @@ socket.on("messages", (messages) => {
           // Mostrar motivo de oración
           createMotivo(element);
           setTimeout(() => {
-            usersOracion.pop();
+            let removed = usersOracion.pop();
             console.log(
               `pasaron ${COOLDOWN_MOTIVO_MS/1000} segundos, permito un nuevo motivo al usuario ${removed}`
             );
