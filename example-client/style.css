@@ -47,7 +47,7 @@ body {
     box-sizing: border-box;
     padding: 0.5rem 1rem;
     margin: 1rem;
-    background: rgba(255, 255, 255, 0.563);
+    background: rgba(255, 255, 255, 0.89);
     border-radius: 1.125rem 1.125rem 1.125rem 0;
     min-height: 1.25rem;
     width: fit-content;
@@ -89,7 +89,7 @@ button {
     /* background: rgb(186,39,32); */
     /* background: linear-gradient(120deg, rgba(186,39,32,1) 0%, rgba(186,39,32,0.2511379551820728) 100%); */
     background: rgb(0,0,0);
-    background: linear-gradient(120deg, rgba(0,0,0,1) 0%, rgba(186,32,32,0.3337710084033614) 100%);
+    background: linear-gradient(120deg, rgba(0,0,0,1) 0%, rgba(186,32,32,0.7937710084033614) 100%);
     max-width: 450px;
     width: 450px;
     border-radius: 8px;
