@@ -3,7 +3,7 @@ const COOLDOWN_MOTIVO_MS = 45000;
 // const COOLDOWN_BURBUJA_MS = 1000;
 // const COOLDOWN_MOTIVO_MS = 1000;
 const TIMEOUT_MOTIVOS_PANTALLA = 180000;
-const TIMEOUT_BURBUJA_PANTALLA = 8000;
+const TIMEOUT_BURBUJA_PANTALLA = 9000;
 
 const SOCKET_URL = "http://192.168.1.50:5000";
 
@@ -88,8 +88,8 @@ socket.on("messages", (messages) => {
     let comment = element.message;
 
     // TODO: Chequear si es owner de transmisión y permitir modificar el tipo de lluvia o activar desactivar motivos de oración
-    // if (element.author.isChatOwner || element.author.isChatModerator) {
-    if (element.author.displayName == 'Luciano Tassara') {
+    if (element.author.isChatOwner || element.author.isChatModerator) {
+    // if (element.author.displayName == 'Luciano Tassara') {
       if (comment ===`!hola`) {
         // modoLluvia = `hola`;
         allowed = ["HOLA","HOLAA","HOLAAA!","HOLA!","HOLIS!","HOLISSSS","👋 HOLA","👋 HOLA!!","👋👋","👋","👋👋👋"];
@@ -126,6 +126,12 @@ socket.on("messages", (messages) => {
                 orar = false;
                 allowed = [];
                 console.log(`${element.author.displayName} Activó el modo silencio. 🔴🔴🔴` )
+              } else {
+                if(comment === '!opciones'){
+                  allowed = ["1", "2", "3", "4", "5", "6", "A", "B", "C", "D", "E", "F"];
+                  console.log(`${element.author.displayName} Activó el modo silencio. 🔴🔴🔴` )
+                  console.log(`Valores permitidos en lluvia ${allowed.toString()}` )
+                }
               }
             }
           }
