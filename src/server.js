@@ -26,7 +26,7 @@ app.use(cors());
 
 app.get('/', (req, res) => {
   res.json({
-    message: '📺 YT Live Chat API 📺',
+    message: '📺 YT Live Chat API - Encuentro con la Vida📺',
   });
 });
 
