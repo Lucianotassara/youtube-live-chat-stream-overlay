@@ -11,10 +11,10 @@ const {
 } = require('./youtubeMessages');
 
 const {
-  MONGO_URI,
+  CHAT_MONGO_URI,
 } = process.env;
 
-const db = monk(MONGO_URI);
+const db = monk(CHAT_MONGO_URI);
 const messages = db.get('messages');
 
 const app = express();
