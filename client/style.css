@@ -14,6 +14,8 @@ body {
     min-height: 100vh;
 }
 
+/* Lluvia */
+
 .burbuja {
     position: fixed;
     top: -1vh;
@@ -33,7 +35,7 @@ body {
     }
 }
 
-/******* Chat box *******/
+/******* Burbuja *******/
 #nombre{
     margin-top: 0px;
     margin-bottom: 0px;
@@ -63,11 +65,7 @@ body {
         color: rgb(0, 0, 0);
     }
 
-/*TOAST NOTIFICATION*/
-
-/**/
-/**/
-
+/* Motivos */
 
 button {
     background-color: lightcoral;
@@ -86,8 +84,6 @@ button {
 }
 
 .toast {
-    /* background: rgb(186,39,32); */
-    /* background: linear-gradient(120deg, rgba(186,39,32,1) 0%, rgba(186,39,32,0.2511379551820728) 100%); */
     background: rgb(0,0,0);
     background: linear-gradient(120deg, rgba(0,0,0,1) 0%, rgba(186,32,32,0.7937710084033614) 100%);
     max-width: 450px;
@@ -96,8 +92,6 @@ button {
     color: #fff;
     padding: 1rem;
     margin: 0.5rem;
-    
-    /**/
 
 }
 

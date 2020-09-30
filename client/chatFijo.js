@@ -1,4 +1,4 @@
-let chatFijo = [
+export const chatFijo = [
     {
       author: {
         channelId: "UCR0AYDs070yWgnX6X2Ygatw",

@@ -1,13 +1,37 @@
-const COOLDOWN_BURBUJA_MS = 45000;
+
+const COOLDOWN_GOTA_MS = 45000;
 const COOLDOWN_MOTIVO_MS = 45000;
-// const COOLDOWN_BURBUJA_MS = 1000;
-// const COOLDOWN_MOTIVO_MS = 1000;
+// const COOLDOWN_GOTA_MS = 1000;   // Testing
+// const COOLDOWN_MOTIVO_MS = 1000; // Testing
 const TIMEOUT_MOTIVOS_PANTALLA = 180000;
 const TIMEOUT_BURBUJA_PANTALLA = 9000;
 
+let chatFijo = [
+  {
+    author: {
+      channelId: "UCR0AYDs070yWgnX6X2Ygatw",
+      channelUrl: "http://www.youtube.com/channel/UCR0AYDs070yWgnX6X2Ygatw",
+      displayName: "Luciano Tassara",
+      isChatModerator: false,
+      isChatOwner: false,
+      isChatSponsor: false,
+      isVerified: false,
+      profileImageUrl:
+        "https://yt3.ggpht.com/-KLM1HdFMDpM/AAAAAAAAAAI/AAAAAAAAAAA/BsKLj9pR3ko/s88-c-k-no-mo-rj-c0xffffff/photo.jpg",
+    },
+    channelId: "UCR0AYDs070yWgnX6X2Ygatw",
+    liveChatId:
+      "Cg0KC2NnbFJlY0JYcVprKicKGFVDc2NYNXZXbE5mSjNXVExWVlAxR044URILY2dsUmVjQlhxWms",
+    message: "Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.Suspendisse sed auctor urna, in eleifend nulla. Praesent viverra sem risus, id ornare nisi asdadf asdfa",
+    message_id:
+      "LCC.CjgKDQoLY2dsUmVjQlhxWmsqJwoYVUNzY1g1dldsTmZKM1dUTFZWUDFHTjhREgtjZ2xSZWNCWHFaaxI6ChpDTnZCOXFDUmctd0NGZGF3Z2dvZG9nSUhwdxIcQ0p1V3NwNzVndXdDRlZIRWtRb2RQbHdMWUEyMA",
+    publishedAt: "2020-09-25T01:17:21.710Z",
+  }
+]
+
 const SOCKET_URL = "http://192.168.1.50:5000";
 
-function createBuble(message) {
+function createGota(message) {
   const burbuja = document.createElement("div");
   burbuja.classList.add("burbuja");
 
@@ -27,6 +51,7 @@ function createBuble(message) {
 
   document.body.appendChild(burbuja);
 
+  //Listener para eliminar haciendo click
   burbuja.addEventListener("click", () => {
     burbuja.remove();
   });
@@ -37,36 +62,37 @@ function createBuble(message) {
 }
 /**/
 
-/********************** TEST BOTON **************************/
+/********************** TEST BOTON **************************
 
-// const btn = document.getElementById("btn");
+const btn = document.getElementById("btn");
 
-// btn.addEventListener("click", () => {
-//     createMotivo(chatFijo[Math.floor(Math.random() * 15) + 1]);
-// });
+btn.addEventListener("click", () => {
+    // createMotivo(chatFijo[Math.floor(Math.random() * 15) + 1]);
+    createMotivo(chatFijo[0]);
+});
 
-/********************** TEST BOTON **************************/
+********************** TEST BOTON **************************/
 
 /* MOTIVOS DE ORACION */
 const container = document.getElementById("container");
 
 function createMotivo(message) {
-  const notif = document.createElement("div");
-  notif.classList.add("toast");
+  const motivo = document.createElement("div");
+  motivo.classList.add("toast");
 
-  notif.innerHTML = ` <img id="avatar" src="${message.author.profileImageUrl}" alt="" width="48" height="48">
+  motivo.innerHTML = ` <img id="avatar" src="${message.author.profileImageUrl}" alt="" width="48" height="48">
                       <h3 id="nombreMotivo">${message.author.displayName} pide oración</h3>
                       <p id="motivo">${message.message}</p>`;
 
   //Listener para eliminar haciendo click
-  notif.addEventListener("click", () => {
-    notif.remove();
+  motivo.addEventListener("click", () => {
+    motivo.remove();
   });
 
-  container.appendChild(notif);
+  container.appendChild(motivo);
 
   setTimeout(() => {
-    notif.remove();
+    motivo.remove();
     console.log(`pasaron ${TIMEOUT_MOTIVOS_PANTALLA/1000} segundos, remuevo el motivo de oración`);
   }, TIMEOUT_MOTIVOS_PANTALLA);
 }
@@ -74,118 +100,212 @@ function createMotivo(message) {
 /* Burbujas de comentarios */
 let orar = false;
 let allowed = [];
-
-let users = [];
-let usersOracion = [];
-
+let blacklistUsersLluvia = [];
+let blacklistUsersOracion = [];
 const socket = io(SOCKET_URL);
 
-// listen for new messages in realtime
+function manageMessage(element){
+  // Guardo el mensaje en la variable comment
+  let comment = element.message;
+
+  /*** BUSCO SI EL MENSAJE ES UN COMANDO de moderador o dueño de transmisión */
+  if (element.author.isChatOwner || element.author.isChatModerator || element.author.displayName == 'Luciano Tassara') {
+    switch(comment){
+      case '!hola': 
+        allowed = ["HOLA","HOLAA","HOLAAA!","HOLA!","HOLIS!","BENDICIONES","HOLISSSS","👋 HOLA","👋 HOLA!!","👋👋","👋","👋👋👋"];
+        console.log(`${element.author.displayName} activó el modo lluvia en hola 👋. Permitidos: ${allowed.toString()}` )
+      
+      case '!amen': 
+        allowed = ["AMEN","AMÉN","AMEN!","AMÉN!","AMEN!!","AMÉN!!","🙏","🙏🙏","🙏🙏🙏","ALELUYA!","ALELUYA!!",'🙌🙌','',"🙌",'🎵','🎵🎵','🎵🎵🎵','🎶','🎶🎶','🎶🎶🎶'];
+        console.log(`${element.author.displayName} activó el modo lluvia en amen 🙏. Permitidos: ${allowed.toString()}` )
+      
+      case '!chau': 
+        allowed = ["CHAU","CHAU!","CHAUUU!!","CHAUUU!","BENDICIONES","HASTA LA PROXIMA","ADIOS!","ADIOS!!","👋👋","👋","👋👋👋"];
+        console.log(`${element.author.displayName} activó el modo lluvia en chau 👋👋. Permitidos: ${allowed.toString()}` )
+      
+      case '!orar': 
+        orar = true;
+        allowed = ["AMEN","AMÉN","AMEN!","AMÉN!","AMEN!!","AMÉN!!","🙏","🙏🙏","🙏🙏🙏"];
+        console.log(`${element.author.displayName} activó el modo lluvia en orar 🙏🙏🙏. Permitidos: ${allowed.toString()}` )
+      
+      case '!orar-end': 
+        orar = false;
+        console.log(`${element.author.displayName} desactivó el modo oración 🙏🙏🙏. Permitidos: ${allowed.toString()}` )
+      
+      case '!silent-mode': 
+        orar = false;
+        allowed = [];
+        console.log(`${element.author.displayName} Activó el modo silencio 🔴🔴🔴.  Permitidos: ${allowed.toString()}` )
+      
+      case '!opciones': 
+        allowed = ["1", "2", "3", "4", "5", "6", "A", "B", "C", "D", "E", "F"]; 
+        console.log(`${element.author.displayName} activó el modo lluvia en opciones 🔴🔴. Permitidos: ${allowed.toString()}` )
+      
+      default: 
+        console.log(`Escribió un moderador, pero no se reconoce el comando.`)
+        break;
+      
+    }
+  }
+
+  /********************************************  MOTIVOS *********************************/
+  // está habilitado el modo orar?
+  if(orar){
+    let str = element.message;
+    // se utilizó el comando correcto?
+    if (str.startsWith("!orar ")) {
+      // el autor ya envió otro comentario? (solo muestro uno por persona)
+      if (blacklistUsersOracion.indexOf(element.author.displayName) === -1) {
+        // Permito el motivo y agrego al usuario al blacklist para que no pueda mandar otro hasta que se cumpla el cooldown COOLDOWN_MOTIVO_MS
+        blacklistUsersOracion.push(element.author.displayName);
+        console.log("Recibo un motivo de oración");
+
+        element.message = str.replace(`!orar `, ``);
+        // Mostrar motivo de oración
+        createMotivo(element);
+
+        //Creo el timeout para eliminar del silencio al autor por COOLDOWN_MOTIVO_MS milisengundos
+        setTimeout(() => {
+          let removed = blacklistUsersOracion.pop();
+          console.log(
+            `pasaron ${COOLDOWN_MOTIVO_MS/1000} segundos, permito un nuevo motivo al usuario ${removed}`
+          );
+        }, COOLDOWN_MOTIVO_MS);
+        return;
+      } else {
+      // El autor del comentario está silenciado temporalmente. No muestro el motivo
+        console.log(
+          element.author.displayName +
+            " quiere enviar mas de un motivo de oración."
+        );
+        return;
+      }
+    }
+  }
+  
+
+  /******************************************* LLUVIA  *************************************/
+  let saludo = element.message.toUpperCase();
+  // Es lluvia permitida?
+  if (allowed.indexOf(saludo) !== -1) {
+    // está silenciado temporalmente el autor del comentario?
+    if (blacklistUsersLluvia.indexOf(element.author.displayName) === -1) {
+      // Es permitido y no esatá silenciado. Armo la gota de lluvia
+      blacklistUsersLluvia.push(element.author.displayName);
+      console.log("Usuarios silenciados: " + blacklistUsersLluvia);
+      createGota(element);
+      //Creo el timeout para eliminar del silencio al autor por COOLDOWN_GOTA_MS milisengundos
+      setTimeout(() => {
+        let removed = blacklistUsersLluvia.pop();
+        console.log(
+          `pasaron ${COOLDOWN_GOTA_MS/1000} segundos, remuevo de blacklist al usuario ${removed}`
+        );
+      }, COOLDOWN_GOTA_MS);
+    } else {
+      // El autor del comentario está silenciado temporalmente. No muestro la gota de lluvia
+      console.log(
+        `${element.author.displayName} Envió un mensaje pero está silenciado.`
+      );
+    }
+  }
+
+}
+
+// Escuchar por mensajes en tiempo real
 socket.on("messages", (messages) => {
   console.log(messages);
 
   messages.forEach((element) => {
-    let comment = element.message;
-
-    // TODO: Chequear si es owner de transmisión y permitir modificar el tipo de lluvia o activar desactivar motivos de oración
-    if (element.author.isChatOwner || element.author.isChatModerator) {
-    // if (element.author.displayName == 'Luciano Tassara') {
-      if (comment ===`!hola`) {
-        // modoLluvia = `hola`;
-        allowed = ["HOLA","HOLAA","HOLAAA!","HOLA!","HOLIS!","HOLISSSS","👋 HOLA","👋 HOLA!!","👋👋","👋","👋👋👋"];
-        console.log(`${element.author.displayName} activó el modo lluvia en hola` )
-        console.log(`Valores permitidos en lluvia ${allowed.toString()}` )
-
-      } else {
-        if (comment ===`!amen`){
-          // modoLluvia = `amen`;
-          allowed = ["AMEN","AMÉN","AMEN!","AMÉN!","AMEN!!","AMÉN!!","🙏","🙏🙏","🙏🙏🙏","ALELUYA!","ALELUYA!!",'🙌🙌','',"🙌",'🎵','🎵🎵','🎵🎵🎵','🎶','🎶🎶','🎶🎶🎶'];
-          console.log(`${element.author.displayName} activó el modo lluvia en amen` )
-          console.log(`Valores permitidos en lluvia ${allowed.toString()}` )
-          
-        } else {
-          if (comment ===`!chau`){
-            // modoLluvia = `chau`;
-            allowed = ["CHAU","CHAU!","CHAUUU!!","CHAUUU!","HASTA LA PROXIMA","ADIOS!","ADIOS!!","👋👋","👋","👋👋👋"];
-            console.log(`${element.author.displayName} activó el modo lluvia en chau` )
-            console.log(`Valores permitidos en lluvia ${allowed.toString()}` )
-
-          }
-          if(comment === '!orar'){
-            orar = true;
-            allowed = ["AMEN","AMÉN","AMEN!","AMÉN!","AMEN!!","AMÉN!!","🙏","🙏🙏","🙏🙏🙏"];
-            console.log(`${element.author.displayName} activó el modo orar por necesidades 🙏🙏🙏` )
-            console.log(`Valores permitidos en lluvia ${allowed.toString()}` )
-          } else {
-            if(comment === '!orar-end'){
-              orar = false;
-              console.log(`${element.author.displayName} finalizó el modo orar por necesidades. 🙏🙏🙏` )
-              console.log(`Valores permitidos en lluvia ${allowed.toString()}` )
-            } else {
-              if(comment === '!silent-mode'){
-                orar = false;
-                allowed = [];
-                console.log(`${element.author.displayName} Activó el modo silencio. 🔴🔴🔴` )
-              } else {
-                if(comment === '!opciones'){
-                  allowed = ["1", "2", "3", "4", "5", "6", "A", "B", "C", "D", "E", "F"];
-                  console.log(`${element.author.displayName} Activó el modo silencio. 🔴🔴🔴` )
-                  console.log(`Valores permitidos en lluvia ${allowed.toString()}` )
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
     
+    manageMessage(element);
+    
+    // // Guardo el mensaje en la variable comment
+    // let comment = element.message;
 
-    /********* LLUVIA  *****************/
-    let saludo = element.message.toUpperCase();
-    if (allowed.indexOf(saludo) !== -1) {
-      if (users.indexOf(element.author.displayName) === -1) {
-        users.push(element.author.displayName);
-        console.log("Usuarios silenciados: " + users);
-        createBuble(element);
-        setTimeout(() => {
-          let removed = users.pop();
-          console.log(
-            `pasaron ${COOLDOWN_BURBUJA_MS/1000} segundos, remuevo de blacklist al usuario ${removed}`
-          );
-        }, COOLDOWN_BURBUJA_MS);
-      } else {
-        console.log(
-          `${element.author.displayName} Envió un mensaje pero está silenciado.`
-        );
-      }
-    }
+    // /*** BUSCO SI EL MENSAJE ES UN COMANDO de moderador o dueño de transmisión */
+    // if (element.author.isChatOwner || element.author.isChatModerator || element.author.displayName == 'Luciano Tassara') {
+    //   switch(comment){
+    //     case '!hola': 
+    //       allowed = ["HOLA","HOLAA","HOLAAA!","HOLA!","HOLIS!","BENDICIONES","HOLISSSS","👋 HOLA","👋 HOLA!!","👋👋","👋","👋👋👋"];
+    //       console.log(`${element.author.displayName} activó el modo lluvia en hola 👋. Permitidos: ${allowed.toString()}` )
+        
+    //     case '!amen': 
+    //       allowed = ["AMEN","AMÉN","AMEN!","AMÉN!","AMEN!!","AMÉN!!","🙏","🙏🙏","🙏🙏🙏","ALELUYA!","ALELUYA!!",'🙌🙌','',"🙌",'🎵','🎵🎵','🎵🎵🎵','🎶','🎶🎶','🎶🎶🎶'];
+    //       console.log(`${element.author.displayName} activó el modo lluvia en amen 🙏. Permitidos: ${allowed.toString()}` )
+        
+    //     case '!chau': 
+    //       allowed = ["CHAU","CHAU!","CHAUUU!!","CHAUUU!","BENDICIONES","HASTA LA PROXIMA","ADIOS!","ADIOS!!","👋👋","👋","👋👋👋"];
+    //       console.log(`${element.author.displayName} activó el modo lluvia en chau 👋👋. Permitidos: ${allowed.toString()}` )
+        
+    //     case '!orar': 
+    //       orar = true;
+    //       allowed = ["AMEN","AMÉN","AMEN!","AMÉN!","AMEN!!","AMÉN!!","🙏","🙏🙏","🙏🙏🙏"];
+    //       console.log(`${element.author.displayName} activó el modo lluvia en orar 🙏🙏🙏. Permitidos: ${allowed.toString()}` )
+        
+    //     case '!orar-end': 
+    //       orar = false;
+    //       console.log(`${element.author.displayName} desactivó el modo oración 🙏🙏🙏. Permitidos: ${allowed.toString()}` )
+        
+    //     case '!silent-mode': 
+    //       orar = false;
+    //       allowed = [];
+    //       console.log(`${element.author.displayName} Activó el modo silencio 🔴🔴🔴.  Permitidos: ${allowed.toString()}` )
+        
+    //     case '!opciones': 
+    //       allowed = ["1", "2", "3", "4", "5", "6", "A", "B", "C", "D", "E", "F"]; 
+    //       console.log(`${element.author.displayName} activó el modo lluvia en opciones 🔴🔴. Permitidos: ${allowed.toString()}` )
+        
+    //     default: 
+    //       console.log(`Escribió un moderador, pero no se reconoce el comando.`)
+    //       break;   
+    //   }
+    // }
 
-    /*********  MOTIVOS DE ORACIÓN  *****************/
-    if(orar){
-      let str = element.message;
-      if (str.startsWith("!orar ")) {
-        if (usersOracion.indexOf(element.author.displayName) === -1) {
-          usersOracion.push(element.author.displayName);
-          console.log("Recibo un motivo de oración");
+    // /********* LLUVIA  *****************/
+    // let saludo = element.message.toUpperCase();
+    // if (allowed.indexOf(saludo) !== -1) {
+    //   if (blacklistUsersLluvia.indexOf(element.author.displayName) === -1) {
+    //     blacklistUsersLluvia.push(element.author.displayName);
+    //     console.log("Usuarios silenciados: " + blacklistUsersLluvia);
+    //     createGota(element);
+    //     setTimeout(() => {
+    //       let removed = blacklistUsersLluvia.pop();
+    //       console.log(
+    //         `pasaron ${COOLDOWN_GOTA_MS/1000} segundos, remuevo de blacklist al usuario ${removed}`
+    //       );
+    //     }, COOLDOWN_GOTA_MS);
+    //   } else {
+    //     console.log(
+    //       `${element.author.displayName} Envió un mensaje pero está silenciado.`
+    //     );
+    //   }
+    // }
 
-          element.message = str.replace("!orar ", "");
-          // Mostrar motivo de oración
-          createMotivo(element);
-          setTimeout(() => {
-            let removed = usersOracion.pop();
-            console.log(
-              `pasaron ${COOLDOWN_MOTIVO_MS/1000} segundos, permito un nuevo motivo al usuario ${removed}`
-            );
-          }, COOLDOWN_MOTIVO_MS);
-        } else {
-          console.log(
-            element.author.displayName +
-              " quiere enviar mas de un motivo de oración."
-          );
-        }
-      }
-    }
+    // /*********  MOTIVOS DE ORACIÓN  *****************/
+    // if(orar){
+    //   let str = element.message;
+    //   if (str.startsWith("!orar ")) {
+    //     if (blacklistUsersOracion.indexOf(element.author.displayName) === -1) {
+    //       blacklistUsersOracion.push(element.author.displayName);
+    //       console.log("Recibo un motivo de oración");
+
+    //       element.message = str.replace(`!orar `, ``);
+    //       // Mostrar motivo de oración
+    //       createMotivo(element);
+    //       setTimeout(() => {
+    //         let removed = blacklistUsersOracion.pop();
+    //         console.log(
+    //           `pasaron ${COOLDOWN_MOTIVO_MS/1000} segundos, permito un nuevo motivo al usuario ${removed}`
+    //         );
+    //       }, COOLDOWN_MOTIVO_MS);
+    //     } else {
+    //       console.log(
+    //         element.author.displayName +
+    //           " quiere enviar mas de un motivo de oración."
+    //       );
+    //     }
+    //   }
+    // }
 
   });
 });
