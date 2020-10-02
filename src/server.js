@@ -90,6 +90,7 @@ async function listenChat() {
   if (listening) {
     return {
       listening: true,
+      channelId: process.env.CHAT_YOUTUBE_CHANNEL_ID_TEST
     };
   }
   const liveEvent = (await getAllEvents())
