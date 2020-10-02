@@ -1,7 +1,7 @@
 const EventEmitter = require('events');
 const axios = require('axios');
 
-require('dotenv').config();
+
 
 const {
   GOOGLE_REFRESH_TOKEN: refresh_token,

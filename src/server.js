@@ -1,3 +1,4 @@
+require('dotenv').config();
 const http = require('http');
 const express = require('express');
 const cors = require('cors');
@@ -26,7 +27,7 @@ app.use(cors());
 
 app.get('/', (req, res) => {
   res.json({
-    message: '📺 YT Live Chat API - Encuentro con la Vida📺',
+    message: '📺 YT Live Chat API - Encuentro con la Vida 📺',
   });
 });
 
