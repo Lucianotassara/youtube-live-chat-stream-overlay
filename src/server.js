@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const monk = require('monk');
+const path = require('path');
 const socketIO = require('socket.io');
 
 const {
@@ -24,6 +25,9 @@ const io = socketIO(server);
 
 app.use(morgan('tiny'));
 app.use(cors());
+
+// Archivos estáticos para el cliente
+app.use('/overlay', express.static(__dirname + '/public'));
 
 app.get('/', (req, res) => {
   res.json({
@@ -144,6 +148,8 @@ function errorHandler(err, req, res, next) {
 
 app.use(notFound);
 app.use(errorHandler);
+
+
 
 const port = process.env.PORT || 5000;
 server.listen(port, () => {
