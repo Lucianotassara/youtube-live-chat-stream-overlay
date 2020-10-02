@@ -27,7 +27,7 @@ app.use(morgan('tiny'));
 app.use(cors());
 
 // Archivos estáticos para el cliente
-app.use('/overlay', express.static(__dirname + '/public'));
+app.use('/overlay', express.static(__dirname + '/overlay'));
 
 app.get('/', (req, res) => {
   res.json({
