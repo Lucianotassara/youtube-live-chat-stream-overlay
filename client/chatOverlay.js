@@ -165,14 +165,14 @@ function manageMessage(element){
         createMotivo(element);
 
         //Creo el timeout para eliminar del silencio al autor por COOLDOWN_MOTIVO_MS milisengundos
-        if (element.author.isChatOwner || element.author.isChatModerator || element.author.displayName == 'Luciano Tassara') {
+        // if (element.author.isChatOwner || element.author.isChatModerator || element.author.displayName == 'Luciano Tassara') {
           setTimeout(() => {
             let removed = blacklistUsersOracion.pop();
             console.log(
               `pasaron ${COOLDOWN_MOTIVO_MS/1000} segundos, permito un nuevo motivo al usuario ${removed}`
             );
           }, COOLDOWN_MOTIVO_MS);
-        }
+        // }
         return;
       } else {
       // El autor del comentario está silenciado temporalmente. No muestro el motivo
@@ -196,15 +196,17 @@ function manageMessage(element){
       blacklistUsersLluvia.push(element.author.displayName);
       console.log("Usuarios silenciados: " + blacklistUsersLluvia);
       createGota(element);
+      
       //Creo el timeout para eliminar del silencio al autor por COOLDOWN_GOTA_MS milisengundos
-      if (element.author.isChatOwner || element.author.isChatModerator || element.author.displayName == 'Luciano Tassara') {
+      // if (element.author.isChatOwner || element.author.isChatModerator || element.author.displayName == 'Luciano Tassara') {
+        
         setTimeout(() => {
           let removed = blacklistUsersLluvia.pop();
           console.log(
             `pasaron ${COOLDOWN_GOTA_MS/1000} segundos, remuevo de blacklist al usuario ${removed}`
           );
         }, COOLDOWN_GOTA_MS);
-      }
+      // }
     } else {
       // El autor del comentario está silenciado temporalmente. No muestro la gota de lluvia
       console.log(
