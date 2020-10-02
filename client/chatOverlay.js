@@ -29,7 +29,7 @@ let chatFijo = [
   }
 ]
 
-const SOCKET_URL = "http://192.168.1.50:5000";
+const SOCKET_URL = "http://chat.encuentrovida.com.ar";
 
 function createGota(message) {
   const burbuja = document.createElement("div");
@@ -114,33 +114,33 @@ function manageMessage(element){
       case '!hola': 
         allowed = ["HOLA","HOLAA","HOLAAA!","HOLA!","HOLIS!","BENDICIONES","HOLISSSS","👋 HOLA","👋 HOLA!!","👋👋","👋","👋👋👋"];
         console.log(`${element.author.displayName} activó el modo lluvia en hola 👋. Permitidos: ${allowed.toString()}` )
-      
+        break;
       case '!amen': 
         allowed = ["AMEN","AMÉN","AMEN!","AMÉN!","AMEN!!","AMÉN!!","🙏","🙏🙏","🙏🙏🙏","ALELUYA!","ALELUYA!!",'🙌🙌','',"🙌",'🎵','🎵🎵','🎵🎵🎵','🎶','🎶🎶','🎶🎶🎶'];
         console.log(`${element.author.displayName} activó el modo lluvia en amen 🙏. Permitidos: ${allowed.toString()}` )
-      
+        break;
       case '!chau': 
         allowed = ["CHAU","CHAU!","CHAUUU!!","CHAUUU!","BENDICIONES","HASTA LA PROXIMA","ADIOS!","ADIOS!!","👋👋","👋","👋👋👋"];
         console.log(`${element.author.displayName} activó el modo lluvia en chau 👋👋. Permitidos: ${allowed.toString()}` )
-      
+        break;
       case '!orar': 
         orar = true;
         allowed = ["AMEN","AMÉN","AMEN!","AMÉN!","AMEN!!","AMÉN!!","🙏","🙏🙏","🙏🙏🙏"];
         console.log(`${element.author.displayName} activó el modo lluvia en orar 🙏🙏🙏. Permitidos: ${allowed.toString()}` )
-      
+        break;
       case '!orar-end': 
         orar = false;
         console.log(`${element.author.displayName} desactivó el modo oración 🙏🙏🙏. Permitidos: ${allowed.toString()}` )
-      
+        break;
       case '!silent-mode': 
         orar = false;
         allowed = [];
         console.log(`${element.author.displayName} Activó el modo silencio 🔴🔴🔴.  Permitidos: ${allowed.toString()}` )
-      
+        break;
       case '!opciones': 
         allowed = ["1", "2", "3", "4", "5", "6", "A", "B", "C", "D", "E", "F"]; 
         console.log(`${element.author.displayName} activó el modo lluvia en opciones 🔴🔴. Permitidos: ${allowed.toString()}` )
-      
+        break;
       default: 
         console.log(`Escribió un moderador, pero no se reconoce el comando.`)
         break;
@@ -218,94 +218,6 @@ socket.on("messages", (messages) => {
   messages.forEach((element) => {
     
     manageMessage(element);
-    
-    // // Guardo el mensaje en la variable comment
-    // let comment = element.message;
-
-    // /*** BUSCO SI EL MENSAJE ES UN COMANDO de moderador o dueño de transmisión */
-    // if (element.author.isChatOwner || element.author.isChatModerator || element.author.displayName == 'Luciano Tassara') {
-    //   switch(comment){
-    //     case '!hola': 
-    //       allowed = ["HOLA","HOLAA","HOLAAA!","HOLA!","HOLIS!","BENDICIONES","HOLISSSS","👋 HOLA","👋 HOLA!!","👋👋","👋","👋👋👋"];
-    //       console.log(`${element.author.displayName} activó el modo lluvia en hola 👋. Permitidos: ${allowed.toString()}` )
-        
-    //     case '!amen': 
-    //       allowed = ["AMEN","AMÉN","AMEN!","AMÉN!","AMEN!!","AMÉN!!","🙏","🙏🙏","🙏🙏🙏","ALELUYA!","ALELUYA!!",'🙌🙌','',"🙌",'🎵','🎵🎵','🎵🎵🎵','🎶','🎶🎶','🎶🎶🎶'];
-    //       console.log(`${element.author.displayName} activó el modo lluvia en amen 🙏. Permitidos: ${allowed.toString()}` )
-        
-    //     case '!chau': 
-    //       allowed = ["CHAU","CHAU!","CHAUUU!!","CHAUUU!","BENDICIONES","HASTA LA PROXIMA","ADIOS!","ADIOS!!","👋👋","👋","👋👋👋"];
-    //       console.log(`${element.author.displayName} activó el modo lluvia en chau 👋👋. Permitidos: ${allowed.toString()}` )
-        
-    //     case '!orar': 
-    //       orar = true;
-    //       allowed = ["AMEN","AMÉN","AMEN!","AMÉN!","AMEN!!","AMÉN!!","🙏","🙏🙏","🙏🙏🙏"];
-    //       console.log(`${element.author.displayName} activó el modo lluvia en orar 🙏🙏🙏. Permitidos: ${allowed.toString()}` )
-        
-    //     case '!orar-end': 
-    //       orar = false;
-    //       console.log(`${element.author.displayName} desactivó el modo oración 🙏🙏🙏. Permitidos: ${allowed.toString()}` )
-        
-    //     case '!silent-mode': 
-    //       orar = false;
-    //       allowed = [];
-    //       console.log(`${element.author.displayName} Activó el modo silencio 🔴🔴🔴.  Permitidos: ${allowed.toString()}` )
-        
-    //     case '!opciones': 
-    //       allowed = ["1", "2", "3", "4", "5", "6", "A", "B", "C", "D", "E", "F"]; 
-    //       console.log(`${element.author.displayName} activó el modo lluvia en opciones 🔴🔴. Permitidos: ${allowed.toString()}` )
-        
-    //     default: 
-    //       console.log(`Escribió un moderador, pero no se reconoce el comando.`)
-    //       break;   
-    //   }
-    // }
-
-    // /********* LLUVIA  *****************/
-    // let saludo = element.message.toUpperCase();
-    // if (allowed.indexOf(saludo) !== -1) {
-    //   if (blacklistUsersLluvia.indexOf(element.author.displayName) === -1) {
-    //     blacklistUsersLluvia.push(element.author.displayName);
-    //     console.log("Usuarios silenciados: " + blacklistUsersLluvia);
-    //     createGota(element);
-    //     setTimeout(() => {
-    //       let removed = blacklistUsersLluvia.pop();
-    //       console.log(
-    //         `pasaron ${COOLDOWN_GOTA_MS/1000} segundos, remuevo de blacklist al usuario ${removed}`
-    //       );
-    //     }, COOLDOWN_GOTA_MS);
-    //   } else {
-    //     console.log(
-    //       `${element.author.displayName} Envió un mensaje pero está silenciado.`
-    //     );
-    //   }
-    // }
-
-    // /*********  MOTIVOS DE ORACIÓN  *****************/
-    // if(orar){
-    //   let str = element.message;
-    //   if (str.startsWith("!orar ")) {
-    //     if (blacklistUsersOracion.indexOf(element.author.displayName) === -1) {
-    //       blacklistUsersOracion.push(element.author.displayName);
-    //       console.log("Recibo un motivo de oración");
-
-    //       element.message = str.replace(`!orar `, ``);
-    //       // Mostrar motivo de oración
-    //       createMotivo(element);
-    //       setTimeout(() => {
-    //         let removed = blacklistUsersOracion.pop();
-    //         console.log(
-    //           `pasaron ${COOLDOWN_MOTIVO_MS/1000} segundos, permito un nuevo motivo al usuario ${removed}`
-    //         );
-    //       }, COOLDOWN_MOTIVO_MS);
-    //     } else {
-    //       console.log(
-    //         element.author.displayName +
-    //           " quiere enviar mas de un motivo de oración."
-    //       );
-    //     }
-    //   }
-    // }
 
   });
 });
