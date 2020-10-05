@@ -102,7 +102,7 @@ let orar = false;
 let allowed = [];
 let blacklistUsersLluvia = [];
 let blacklistUsersOracion = [];
-const socket = io(SOCKET_URL);
+const socket = io(SOCKET_URL, {transports: ['websocket']});
 
 function manageMessage(element){
   // Guardo el mensaje en la variable comment
@@ -220,7 +220,6 @@ function manageMessage(element){
 // Escuchar por mensajes en tiempo real
 socket.on("messages", (messages) => {
   console.log(messages);
-
   messages.forEach((element) => {
     
     manageMessage(element);
