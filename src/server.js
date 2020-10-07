@@ -4,7 +4,6 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const monk = require('monk');
-const path = require('path');
 const socketIO = require('socket.io');
 
 const {
@@ -40,7 +39,7 @@ app.get('/events', async (req, res, next) => {
     const events = await getAllEvents();
     return res.json(events);
   } catch (error) {
-    return next(error);
+      return next(error);
   }
 });
 
@@ -62,7 +61,16 @@ app.get('/messages', async (req, res, next) => {
   }
 });
 
-app.get('/messagesReport', async (req, res, next) => {
+
+const converter = require('json-2-csv');
+
+const downloadResource = (res, fileName, data) => {
+  res.header('Content-Type', 'text/csv');
+  res.attachment(fileName);
+  return res.send(data);
+}
+
+app.get('/messages-csv', async (req, res, next) => {
   try {
     const where = {};
     if (req.query.liveChatId) {
@@ -71,26 +79,54 @@ app.get('/messagesReport', async (req, res, next) => {
     if (req.query.q) {
       where.message = { $regex: req.query.q.toString() };
     }
-
-    //const allMessages = await messages.distinct('liveChatId');
-
     const allMessages = await messages.find(where, {
-      $groupBy: { liveChatId },
+      $orderby: { publishedAt: -1 },
     });
-    
 
-    return res.json(allMessages);
+    // return res.json(allMessages);
+
+    const fields = [
+      'message_id',
+      'liveChatId',
+      'message',
+      'publishedAt',
+      'channelId',
+      'author.channelId',
+      'author.channelUrl',
+      'author.displayName',
+      'author.profileImageUrl',
+      'author.isVerified',
+      'author.isChatOwner',
+      'author.isChatSponsor',
+      'author.isChatModerator'
+    ]
+
+    converter.json2csv(allMessages, fields, (err, csv) => {
+      if (err) {
+          throw err;
+      }
+  
+      // print CSV string
+      console.log(csv);
+      // return res.json({'csv': csv})
+      
+      return downloadResource(res, 'test.csv', csv);
+
+    });
+
   } catch (error) {
     return next(error);
   }
 });
+
+
 
 let listening = false;
 async function listenChat() {
   if (listening) {
     return {
       listening: true,
-      channelId: process.env.CHAT_YOUTUBE_CHANNEL_ID_TEST
+      channelId: process.env.CHAT_YOUTUBE_CHANNEL_ID
     };
   }
   const liveEvent = (await getAllEvents())
@@ -130,6 +166,8 @@ app.get('/listen', async (req, res) => {
   const result = await listenChat();
   return res.json(result);
 });
+
+
 
 function notFound(req, res, next) {
   const error = new Error(`Not Found - ${req.originalUrl}`);
