@@ -20,7 +20,7 @@ const messages = db.get('messages');
 
 const app = express();
 const server = http.Server(app);
-const io = socketIO(server);
+const io = socketIO(server, cors_allowed_origins=[process.env.CHAT_DOMAIN]);
 
 app.use(morgan('tiny'));
 app.use(cors());
