@@ -101,7 +101,7 @@ let orar = false;
 let allowed = [];
 let blacklistUsersLluvia = [];
 let blacklistUsersOracion = [];
-const socket = io(SOCKET_URL, {transports: ['websocket']}, {secure: true});
+const socket = io(SOCKET_URL);
 
 function manageMessage(element){
   // Guardo el mensaje en la variable comment
