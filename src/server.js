@@ -20,7 +20,7 @@ const messages = db.get('messages');
 
 const app = express();
 const server = http.Server(app);
-const io = socketIO(server);
+const io = socketIO(server, {secure: true});
 
 io.set('origins', `${process.env.CHAT_URL}:443`,`${process.env.CHAT_URL}:80`)
 
