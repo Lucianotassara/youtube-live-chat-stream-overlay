@@ -20,7 +20,9 @@ const messages = db.get('messages');
 
 const app = express();
 const server = http.Server(app);
-const io = socketIO(server, cors_allowed_origins=[process.env.CHAT_DOMAIN]);
+const io = socketIO(server);
+
+io.set('origins', `${process.env.CHAT_URL}:80`)
 
 app.use(morgan('tiny'));
 app.use(cors());
@@ -126,7 +128,7 @@ async function listenChat() {
   if (listening) {
     return {
       listening: true,
-      channelId: process.env.CHAT_YOUTUBE_CHANNEL_ID
+      // channelId: process.env.CHAT_YOUTUBE_CHANNEL_ID
     };
   }
   const liveEvent = (await getAllEvents())
