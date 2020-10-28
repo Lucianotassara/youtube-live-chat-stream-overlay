@@ -22,7 +22,7 @@ const app = express();
 const server = http.Server(app);
 const io = socketIO(server);
 
-io.set('origins', `${process.env.CHAT_URL}:80`)
+io.set('origins', `${process.env.CHAT_URL}:443`,`${process.env.CHAT_URL}:80`)
 
 app.use(morgan('tiny'));
 app.use(cors());
