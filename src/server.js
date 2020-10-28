@@ -19,7 +19,7 @@ const db = monk(CHAT_MONGO_URI);
 const messages = db.get('messages');
 
 const app = express();
-const server = https.Server(app);
+const server = http.Server(app);
 const io = socketIO(server);
 
 io.set('origins', `${process.env.CHAT_URL}:443`,`${process.env.CHAT_URL}:80`)
