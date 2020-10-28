@@ -1,5 +1,5 @@
 require('dotenv').config();
-const http = require('http');
+const https = require('https');
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -19,7 +19,7 @@ const db = monk(CHAT_MONGO_URI);
 const messages = db.get('messages');
 
 const app = express();
-const server = http.Server(app);
+const server = https.Server(app);
 const io = socketIO(server);
 
 io.set('origins', `${process.env.CHAT_URL}:443`,`${process.env.CHAT_URL}:80`)
