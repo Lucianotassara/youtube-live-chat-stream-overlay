@@ -1,7 +1,7 @@
 
 const COOLDOWN_GOTA_MS = 45000;
 const COOLDOWN_MOTIVO_MS = 45000;
-const TIMEOUT_MOTIVOS_PANTALLA = 180000;
+const TIMEOUT_MOTIVOS_PANTALLA = 1800000000;
 const TIMEOUT_BURBUJA_PANTALLA = 9000;
 
 let chatFijo = [
@@ -27,7 +27,8 @@ let chatFijo = [
   }
 ]
 
-const SOCKET_URL = "http://chat.encuentrovida.com.ar";
+const SOCKET_URL = "https://chat.encuentrovida.com.ar";
+// const SOCKET_URL = "http://192.168.100.105:5000";
 
 function createGota(message) {
   const burbuja = document.createElement("div");
