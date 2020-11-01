@@ -154,7 +154,7 @@ function manageMessage(element){
   if(orar){
     let str = element.message;
     // se utilizó el comando correcto?
-    if (str.startsWith("!orar ") || str.startsWith("orar")) {
+    if (str.startsWith("!orar ") || str.startsWith("orar ")) {
       // el autor ya envió otro comentario? (solo muestro uno por persona)
       if (blacklistUsersOracion.indexOf(element.author.displayName) === -1) {
         // Permito el motivo y agrego al usuario al blacklist para que no pueda mandar otro hasta que se cumpla el cooldown COOLDOWN_MOTIVO_MS
