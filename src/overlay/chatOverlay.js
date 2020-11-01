@@ -161,6 +161,7 @@ function manageMessage(element){
         blacklistUsersOracion.push(element.author.displayName);
         console.log("Recibo un motivo de oración");
 
+        element.message = str.replace(`orar `, ``);
         element.message = str.replace(`!orar `, ``);
         // Mostrar motivo de oración
         createMotivo(element);
