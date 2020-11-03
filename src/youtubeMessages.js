@@ -8,7 +8,8 @@ const {
   GOOGLE_CLIENT_ID: client_id,
   GOOGLE_CLIENT_SECRET: client_secret,
   CHAT_YOUTUBE_CHANNEL_ID: channelId,
-  CHAT_GOOGLE_API_KEY_3: key,
+  //CHAT_GOOGLE_API_KEY_3: key,
+  CHAT_YOUTUBE_CHANNEL_ID_US: key,
 } = process.env;
 
 let tokenInfo = null;
