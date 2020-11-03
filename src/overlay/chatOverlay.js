@@ -29,7 +29,7 @@ let chatFijo = [
 
 // const SOCKET_URL = "https://chat.encuentrovida.com.ar";
 // const SOCKET_URL = "http://192.168.100.105:5000";
-const SOCKET_URL = "https://frightening-eyeballs-16670.herokuapp.com/";
+const SOCKET_URL = "https://ev-chat-overlay.herokuapp.com/";
 
 
 function createGota(message) {
