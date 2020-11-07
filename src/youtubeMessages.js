@@ -1,8 +1,6 @@
 const EventEmitter = require('events');
 const axios = require('axios');
 
-
-
 const {
   GOOGLE_REFRESH_TOKEN: refresh_token,
   GOOGLE_CLIENT_ID: client_id,
