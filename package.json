@@ -5,7 +5,7 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "test": "nodemon src/server.js"
   },
   "keywords": [],
   "author": "CJ R. <cj@null.computer> (https://w3cj.sh)",
@@ -19,6 +19,8 @@
     "https": "^1.0.0",
     "json-2-csv": "^3.7.7",
     "json2csv": "^5.0.3",
+    "moment": "^2.29.1",
+    "mongoose": "^5.12.11",
     "monk": "^7.3.0",
     "morgan": "^1.10.0",
     "socket.io": "^2.3.0"

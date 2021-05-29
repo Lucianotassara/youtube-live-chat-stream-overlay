@@ -5,6 +5,8 @@ const cors = require('cors');
 const morgan = require('morgan');
 const monk = require('monk');
 const socketIO = require('socket.io');
+const mongoose = require('mongoose');
+mongoose.set('debug', true);
 
 const {
   getAllEvents,
@@ -12,7 +14,7 @@ const {
 } = require('./youtubeMessages');
 
 const {
-  CHAT_MONGO_URI,
+  CHAT_MONGO_URI, CHAT_MONGOOSE_URI
 } = process.env;
 
 const db = monk(CHAT_MONGO_URI);
@@ -36,9 +38,71 @@ app.get('/', (req, res) => {
   });
 });
 
+/*SCHEMA************************************************************** */
+const ThumbnailSchema = mongoose.Schema({
+  url: String,
+  width: Number,
+  height: Number,
+});
+
+const SnippetSchema = mongoose.Schema({
+  publishedAt: Date,
+  channelId: String,
+  title: String,
+  description: String,
+  thumbnails: {
+      default: {
+          type: ThumbnailSchema,
+          required: true,
+      },
+      medium: {
+          type: ThumbnailSchema,
+          required: true,
+      },
+      high: {
+          type: ThumbnailSchema,
+          required: true,
+      }
+  },
+  channelTitle: String,
+  liveBroadcastContent: String,
+  publishTime: Date,
+  liveChatId: String,
+  });
+
+const LiveStreamingDetailsSchema = mongoose.Schema({
+  actualStartTime: Date,
+  scheduledStartTime: Date,
+  concurrentViewers: String,
+  activeLiveChatId: String,
+});
+
+const EventSchema = mongoose.Schema({
+  kind: String,
+  etag: String,
+  id: String,
+  snippet: {
+      type: SnippetSchema,
+      required: true,
+  },
+  videoId: String,
+  liveStreamingDetails: {
+      type: LiveStreamingDetailsSchema,
+      required: true,
+  }
+});
+
+const EventModel = mongoose.model("Event", EventSchema);
+/********************************************************************* */
 app.get('/events', async (req, res, next) => {
   try {
     const events = await getAllEvents();
+    for (const event of events) {
+      EventModel.findOneAndUpdate({id: event.id}, event, {upsert: true}, function (err, r) {
+        if(err) console.log('error: ',err)
+
+      })
+    }
     return res.json(events);
   } catch (error) {
       return next(error);
@@ -59,10 +123,23 @@ app.get('/messages', async (req, res, next) => {
     });
     return res.json(allMessages);
   } catch (error) {
-    return next(error);
+      return next(error);
   }
 });
 
+
+app.get('/all-events', async (req, res, next) => {
+  try {
+    const where = {};
+    if (req.query.q) {
+      where.message = { $regex: req.query.q.toString() };
+    }
+    const allEvents = await messages.distinct("liveChatId");
+    return res.json(allEvents);
+  } catch (error) {
+    return next(error);
+  }
+});
 
 const converter = require('json-2-csv');
 
@@ -82,7 +159,7 @@ app.get('/messages-csv', async (req, res, next) => {
       where.message = { $regex: req.query.q.toString() };
     }
     const allMessages = await messages.find(where, {
-      $orderby: { publishedAt: -1 },
+      $orderby: { publishedAt: -1 }
     });
 
     // return res.json(allMessages);
@@ -105,13 +182,13 @@ app.get('/messages-csv', async (req, res, next) => {
 
     converter.json2csv(allMessages, fields, (err, csv) => {
       if (err) {
-          throw err;
+        throw err;
       }
-  
+
       // print CSV string
       console.log(csv);
       // return res.json({'csv': csv})
-      
+
       return downloadResource(res, 'test.csv', csv);
 
     });
@@ -123,12 +200,38 @@ app.get('/messages-csv', async (req, res, next) => {
 
 
 
+/*SCHEMA************************************************************** */
+const AuthorSchema = mongoose.Schema({
+  channelId: String,
+  channelUrl: String,
+  displayName: String,
+  profileImageUrl: String,
+  isVerified: Boolean,
+  isChatOwner: Boolean,
+  isChatSponsor: Boolean,
+  isChatModerator: Boolean
+});
+
+const MessageSchema = mongoose.Schema({
+  message_id: String,
+  liveChatId: String,
+  message: String,
+  publishedAt: String,
+  channelId: String,
+  author: {
+      type: AuthorSchema,
+      required: true,
+  },
+});
+
+const MessageModel = mongoose.model("Message", MessageSchema);
+/********************************************************************** */
+
 let listening = false;
 async function listenChat() {
   if (listening) {
     return {
-      listening: true,
-      // channelId: process.env.CHAT_YOUTUBE_CHANNEL_ID
+      listening: true
     };
   }
   const liveEvent = (await getAllEvents())
@@ -144,12 +247,23 @@ async function listenChat() {
     listener.on('messages', async (newMessages) => {
       newMessages = newMessages.sort((a, b) => a.publishedAt - b.publishedAt);
       io.emit('messages', newMessages);
+     
+     // Save the messages using mongoose....
+      for (const message of newMessages) {
+        // console.log('receiving this message: ', message);
+        MessageModel.findOneAndUpdate({message_id: message.message_id},message, {upsert: true}, function (err, r) {
+          if(err) console.log('error: ',err)
+        })
+      }  
+
+      // Save the messages using monk.
       newMessages.forEach((message) => messages.update({
         message_id: message.message_id,
       }, message, {
         replaceOne: true,
         upsert: true,
       }));
+      
     });
     listener.on('event-end', (data) => {
       io.emit('event-end', data);
@@ -195,4 +309,9 @@ app.use(errorHandler);
 const port = process.env.PORT || 5000;
 server.listen(port, () => {
   console.log(`Listening at http://localhost:${port}`);
+  mongoose
+    .connect(CHAT_MONGOOSE_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => {
+        console.log(`Conneted to mongoDB with mongoose`);
+      });
 });

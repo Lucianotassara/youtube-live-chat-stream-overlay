@@ -28,7 +28,7 @@ let chatFijo = [
 ]
 
 // const SOCKET_URL = "https://chat.encuentrovida.com.ar";
-// const SOCKET_URL = "http://192.168.100.105:5000";
+// const SOCKET_URL = "http://localhost:5000";
 const SOCKET_URL = "https://ev-chat-overlay.herokuapp.com/";
 
 
@@ -154,7 +154,7 @@ function manageMessage(element){
   if(orar){
     let str = element.message;
     // se utilizó el comando correcto?
-    if (str.startsWith("!orar ") || str.startsWith("orar ")) {
+    if (str.startsWith("!orar ") || str.startsWith("orar ") || str.startsWith("Orar ") || str.startsWith("oracion ") || str.startsWith("Oración ")) {
       // el autor ya envió otro comentario? (solo muestro uno por persona)
       if (blacklistUsersOracion.indexOf(element.author.displayName) === -1) {
         // Permito el motivo y agrego al usuario al blacklist para que no pueda mandar otro hasta que se cumpla el cooldown COOLDOWN_MOTIVO_MS
@@ -162,6 +162,7 @@ function manageMessage(element){
         console.log("Recibo un motivo de oración");
 
         element.message = str.replace(`orar `, ``);
+        element.message = str.replace(`Orar `, ``);
         element.message = str.replace(`!orar `, ``);
         // Mostrar motivo de oración
         createMotivo(element);
@@ -194,6 +195,7 @@ function manageMessage(element){
   if (allowed.indexOf(saludo) !== -1) {
     // está silenciado temporalmente el autor del comentario?
     if (blacklistUsersLluvia.indexOf(element.author.displayName) === -1) {
+
       // Es permitido y no esatá silenciado. Armo la gota de lluvia
       blacklistUsersLluvia.push(element.author.displayName);
       console.log("Usuarios silenciados: " + blacklistUsersLluvia);
@@ -202,13 +204,14 @@ function manageMessage(element){
       //Creo el timeout para eliminar del silencio al autor por COOLDOWN_GOTA_MS milisengundos
       // if (element.author.isChatOwner || element.author.isChatModerator || element.author.displayName == 'Luciano Tassara') {
         
-        setTimeout(() => {
+      setTimeout(() => {
           let removed = blacklistUsersLluvia.pop();
           console.log(
             `pasaron ${COOLDOWN_GOTA_MS/1000} segundos, remuevo de blacklist al usuario ${removed}`
           );
         }, COOLDOWN_GOTA_MS);
       // }
+
     } else {
       // El autor del comentario está silenciado temporalmente. No muestro la gota de lluvia
       console.log(
