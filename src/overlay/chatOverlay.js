@@ -142,6 +142,10 @@ function manageMessage(element){
         allowed = ["1", "2", "3", "4", "5", "6", "A", "B", "C", "D", "E", "F"]; 
         console.log(`${element.author.displayName} activó el modo lluvia en opciones 🔴🔴. Permitidos: ${allowed.toString()}` )
         break;
+      case '!juegos': 
+        allowed = ["AVION","BIBLIA","CELULAR","LEON","JESUS"];
+        console.log(`${element.author.displayName} activó el modo lluvia juegos. Permitidos: ${allowed.toString()}` )
+        break;
       default: 
         console.log(`Escribió un moderador, pero no se reconoce el comando.`)
         break;
