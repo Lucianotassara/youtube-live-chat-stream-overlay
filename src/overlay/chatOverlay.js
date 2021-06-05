@@ -143,7 +143,7 @@ function manageMessage(element){
         console.log(`${element.author.displayName} activó el modo lluvia en opciones 🔴🔴. Permitidos: ${allowed.toString()}` )
         break;
       case '!juegos': 
-        allowed = ["AVION","BIBLIA","CELULAR","LEON","JESUS"];
+        allowed = ["AVION", "AVIÓN","BIBLIA","CELULAR","LEON","JESUS","LEÓN","JESÚS"];
         console.log(`${element.author.displayName} activó el modo lluvia juegos. Permitidos: ${allowed.toString()}` )
         break;
       default: 
