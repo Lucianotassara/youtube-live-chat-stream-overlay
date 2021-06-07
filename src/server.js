@@ -149,38 +149,81 @@ const downloadResource = (res, fileName, data) => {
   return res.send(data);
 }
 
-app.get('/messages-csv', async (req, res, next) => {
-  try {
-    const where = {};
-    if (req.query.liveChatId) {
-      where.liveChatId = req.query.liveChatId;
-    }
-    if (req.query.q) {
-      where.message = { $regex: req.query.q.toString() };
-    }
-    const allMessages = await messages.find(where, {
-      $orderby: { publishedAt: -1 }
-    });
+// app.get('/messages-csv', async (req, res, next) => {
+//   try {
+//     const where = {};
+//     if (req.query.liveChatId) {
+//       where.liveChatId = req.query.liveChatId;
+//     }
+//     if (req.query.q) {
+//       where.message = { $regex: req.query.q.toString() };
+//     }
+//     const allMessages = await messages.find(where, {
+//       $orderby: { publishedAt: -1 }
+//     });
 
+//     // return res.json(allMessages);
+
+//     const fields = [
+//       'message_id',
+//       'liveChatId',
+//       'message',
+//       'publishedAt',
+//       'channelId',
+//       'author.channelId',
+//       'author.channelUrl',
+//       'author.displayName',
+//       'author.profileImageUrl',
+//       'author.isVerified',
+//       'author.isChatOwner',
+//       'author.isChatSponsor',
+//       'author.isChatModerator'
+//     ]
+
+//     converter.json2csv(allMessages, fields, (err, csv) => {
+//       if (err) {
+//         throw err;
+//       }
+
+//       // print CSV string
+//       console.log(csv);
+//       // return res.json({'csv': csv})
+
+//       return downloadResource(res, 'test.csv', csv);
+
+//     });
+
+//   } catch (error) {
+//     return next(error);
+//   }
+// });
+
+
+
+app.get('/asitentes/:liveChatId', async (req, res, next) => {
+  try {
     // return res.json(allMessages);
 
+    const aggregate = messages.aggregate([
+      {$match: {liveChatId: req.params.liveChatId }},
+      {$group: {_id:"$author.displayName"} }
+    ]);
+
+    console.log(await aggregate);
+
+    /*** TESTED ON MONGO ATLAS, OK
+     * 
+     * db.messages.aggregate([
+          {$match: {liveChatId: "Cg0KC05kMG1LdG1vSWJZKicKGFVDMEllUVhKbmwzN29OUGhRV3hEZUgydxILTmQwbUt0bW9JYlk"}},
+          {$group: {_id:"$author.displayName", total: {$sum: "$author.displayName"}} }
+        ])
+     */
+
     const fields = [
-      'message_id',
-      'liveChatId',
-      'message',
-      'publishedAt',
-      'channelId',
-      'author.channelId',
-      'author.channelUrl',
-      'author.displayName',
-      'author.profileImageUrl',
-      'author.isVerified',
-      'author.isChatOwner',
-      'author.isChatSponsor',
-      'author.isChatModerator'
+      'nombre'
     ]
 
-    converter.json2csv(allMessages, fields, (err, csv) => {
+    converter.json2csv(await aggregate, fields, (err, csv) => {
       if (err) {
         throw err;
       }
@@ -189,7 +232,7 @@ app.get('/messages-csv', async (req, res, next) => {
       console.log(csv);
       // return res.json({'csv': csv})
 
-      return downloadResource(res, 'test.csv', csv);
+      return downloadResource(res, 'agregateTest.csv', csv);
 
     });
 
@@ -197,8 +240,6 @@ app.get('/messages-csv', async (req, res, next) => {
     return next(error);
   }
 });
-
-
 
 /*SCHEMA************************************************************** */
 const AuthorSchema = mongoose.Schema({
