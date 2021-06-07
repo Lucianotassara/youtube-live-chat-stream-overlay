@@ -109,6 +109,18 @@ app.get('/events', async (req, res, next) => {
   }
 });
 
+app.get('/all-events', async (req, res, next) => {
+  try {
+      EventModel.find({}, function (err, ev) {
+        if(err) console.log('error: ',err)
+        return res.json(ev);
+      })
+
+  } catch (error) {
+      return next(error);
+  }
+});
+
 app.get('/messages', async (req, res, next) => {
   try {
     const where = {};
@@ -128,18 +140,18 @@ app.get('/messages', async (req, res, next) => {
 });
 
 
-app.get('/all-events', async (req, res, next) => {
-  try {
-    const where = {};
-    if (req.query.q) {
-      where.message = { $regex: req.query.q.toString() };
-    }
-    const allEvents = await messages.distinct("liveChatId");
-    return res.json(allEvents);
-  } catch (error) {
-    return next(error);
-  }
-});
+// app.get('/all-events', async (req, res, next) => {
+//   try {
+//     const where = {};
+//     if (req.query.q) {
+//       where.message = { $regex: req.query.q.toString() };
+//     }
+//     const allEvents = await messages.distinct("liveChatId");
+//     return res.json(allEvents);
+//   } catch (error) {
+//     return next(error);
+//   }
+// });
 
 const converter = require('json-2-csv');
 
