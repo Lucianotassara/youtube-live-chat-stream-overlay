@@ -212,7 +212,7 @@ const downloadResource = (res, fileName, data) => {
 
 
 
-app.get('/asitentes/:liveChatId', async (req, res, next) => {
+app.get('/asistentes/:liveChatId', async (req, res, next) => {
   try {
     // return res.json(allMessages);
 
